@@ -1,1 +1,1 @@
-# shurjopay-sdk
+# shurjopay-sdk-android
