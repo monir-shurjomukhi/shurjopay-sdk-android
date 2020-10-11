@@ -3,8 +3,8 @@ package com.sm.shurjopaysdk.payment;
 import android.app.Dialog;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
-import com.sm.shurjopaysdk.listener.SMAppServiceListener;
-import com.sm.shurjopaysdk.model.SMResponseModel;
+import com.sm.shurjopaysdk.listener.PaymentResultListener;
+import com.sm.shurjopaysdk.model.TransactionInfo;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,14 +17,14 @@ import java.util.Map;
 //                            _/ |
 //
 
-public class SMWebAppInterface {
+public class SPayWebAppInterface {
   private Dialog dialog;
-  private SMAppServiceListener listener;
+  private PaymentResultListener listener;
 
   /**
    * Instantiate the interface and set the context
    */
-  SMWebAppInterface(Dialog dialog, SMAppServiceListener listener) {
+  SPayWebAppInterface(Dialog dialog, PaymentResultListener listener) {
     this.dialog = dialog;
     this.listener = listener;
   }
@@ -59,8 +59,8 @@ public class SMWebAppInterface {
    * @param response to decode
    * @return decoded response
    */
-  private SMResponseModel decodeResponse(String response) {
-    SMResponseModel responseModel = new SMResponseModel();
+  private TransactionInfo decodeResponse(String response) {
+    TransactionInfo responseModel = new TransactionInfo();
 
     Map<String, String> responseMap = new HashMap<>();
     String[] parts = response.split("&");

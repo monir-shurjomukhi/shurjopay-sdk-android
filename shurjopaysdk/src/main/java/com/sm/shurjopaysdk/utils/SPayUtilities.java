@@ -1,5 +1,9 @@
 package com.sm.shurjopaysdk.utils;
 
+import android.net.Uri;
+
+import java.util.Map;
+
 //        _                     _        ___  ___        _     _      _       _      _        _
 //       | |                   (_)       |  \/  |       | |   | |    (_)     | |    | |      | |
 //   ___ | |__   _   _  _ __    _   ___  | .  . | _   _ | | __| |__   _      | |    | |_   __| |
@@ -9,10 +13,22 @@ package com.sm.shurjopaysdk.utils;
 //                            _/ |
 //
 
-public class SMAppConfig {
+public class SPayUtilities {
   /**
-   * Bank Page link for specific merchant
+   * Build URI
+   *
+   * @param url    main link
+   * @param params to add
+   * @return main uri with param
    */
-  //public static final String BANK_PAGE_LINK = "https://paypoint.shurjorajjo.com.bd/payapi/clients";
-  public static final String BANK_PAGE_LINK = "https://shurjopay.shurjorajjo.com.bd/sp-data.php";
+  public static String buildURI(String url, Map<String, String> params) {
+
+    // build url with parameters.
+    Uri.Builder builder = Uri.parse(url).buildUpon();
+    for (Map.Entry<String, String> entry : params.entrySet()) {
+      builder.appendQueryParameter(entry.getKey(), entry.getValue());
+    }
+
+    return builder.build().toString();
+  }
 }

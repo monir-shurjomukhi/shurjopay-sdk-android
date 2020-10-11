@@ -1,6 +1,4 @@
-package com.sm.shurjopaysdk.listener;
-
-import com.sm.shurjopaysdk.model.SMResponseModel;
+package com.sm.shurjopaysdk.utils;
 
 //        _                     _        ___  ___        _     _      _       _      _        _
 //       | |                   (_)       |  \/  |       | |   | |    (_)     | |    | |      | |
@@ -11,9 +9,10 @@ import com.sm.shurjopaysdk.model.SMResponseModel;
 //                            _/ |
 //
 
-public interface SMAppServiceListener {
-
-  void onSuccess(SMResponseModel responseModel);
-
-  void onFailed(String message);
+public class SPayAppConfig {
+  /**
+   * Bank Page link for specific merchant
+   */
+  //public static final String BANK_PAGE_LINK = "https://paypoint.shurjorajjo.com.bd/payapi/clients";
+  public static final String BANK_PAGE_LINK = "https://shurjopay.shurjorajjo.com.bd/sp-data.php";
 }

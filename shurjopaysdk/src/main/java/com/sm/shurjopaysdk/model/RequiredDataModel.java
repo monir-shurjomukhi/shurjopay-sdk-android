@@ -1,6 +1,6 @@
 package com.sm.shurjopaysdk.model;
 
-public class SMRequestModel {
+public class RequiredDataModel {
   private String merchantName;
   private String merchantPass;
   private String userIP;

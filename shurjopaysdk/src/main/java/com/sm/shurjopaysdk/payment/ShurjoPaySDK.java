@@ -25,14 +25,14 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.sm.shurjopaysdk.listener.SMAppServiceListener;
-import com.sm.shurjopaysdk.model.SMRequestModel;
-import com.sm.shurjopaysdk.utils.SMAppConfig;
-import com.sm.shurjopaysdk.utils.SMConstants;
-import com.sm.shurjopaysdk.utils.SMNetworkManager;
-import com.sm.shurjopaysdk.utils.SMPermissionCheck;
-import com.sm.shurjopaysdk.utils.SMUtilities;
-import com.sm.shurjopaysdk.utils.SMValidator;
+import com.sm.shurjopaysdk.listener.PaymentResultListener;
+import com.sm.shurjopaysdk.model.RequiredDataModel;
+import com.sm.shurjopaysdk.utils.SPayAppConfig;
+import com.sm.shurjopaysdk.utils.SPayConstants;
+import com.sm.shurjopaysdk.utils.SPayNetworkManager;
+import com.sm.shurjopaysdk.utils.PermissionsManager;
+import com.sm.shurjopaysdk.utils.SPayUtilities;
+import com.sm.shurjopaysdk.utils.SPayValidator;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,7 +45,7 @@ public class ShurjoPaySDK {
   private static ShurjoPaySDK mInstance = null;
 
   private Activity activity = null;
-  private SMAppServiceListener listener = null;
+  private PaymentResultListener listener = null;
   private AlertDialog alert;
   private ProgressDialog progressDialog;
 
@@ -94,29 +94,29 @@ public class ShurjoPaySDK {
     }
   }
 
-  public static String postDataFromMap(SMRequestModel smRequestModel) {
+  public static String postDataFromMap(RequiredDataModel requiredDataModel) {
     return "spdata=<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
         + " <shurjoPay>\n"
         + " <merchantName>"
-        + smRequestModel.getMerchantName()
+        + requiredDataModel.getMerchantName()
         + "</merchantName>\n"
         + " <merchantPass>"
-        + smRequestModel.getMerchantPass()
+        + requiredDataModel.getMerchantPass()
         + "</merchantPass>\n"
         + " <userIP>"
-        + smRequestModel.getUserIP()
+        + requiredDataModel.getUserIP()
         + "</userIP>\n"
         + " <uniqID>"
-        + smRequestModel.getUniqID()
+        + requiredDataModel.getUniqID()
         + "</uniqID>\n"
         + " <totalAmount>"
-        + smRequestModel.getTotalAmount()
+        + requiredDataModel.getTotalAmount()
         + "</totalAmount>\n"
         + " <paymentOption>"
-        + smRequestModel.getPaymentOption()
+        + requiredDataModel.getPaymentOption()
         + "</paymentOption>\n"
         + " <returnURL>"
-        + smRequestModel.getReturnURL()
+        + requiredDataModel.getReturnURL()
         + "</returnURL>\n"
         + " </shurjoPay>";
   }
@@ -127,7 +127,7 @@ public class ShurjoPaySDK {
    * @param listener to check
    * @return an single tone instance
    */
-  public ShurjoPaySDK setListener(SMAppServiceListener listener) {
+  public ShurjoPaySDK setListener(PaymentResultListener listener) {
     if (listener != null) {
       this.listener = listener;
     }
@@ -145,9 +145,9 @@ public class ShurjoPaySDK {
    */
   public ShurjoPaySDK setAmount(double amount) {
     this.amount = amount;
-    if (!SMValidator.isValidAmount(amount)) {
+    if (!SPayValidator.isValidAmount(amount)) {
       if (listener != null) {
-        listener.onFailed(SMConstants.Exception.INVALID_AMOUNT);
+        listener.onFailed(SPayConstants.Exception.INVALID_AMOUNT);
       }
     }
     return mInstance;
@@ -174,28 +174,28 @@ public class ShurjoPaySDK {
 
     // Check minimum and maximum amount check
     if (amount < 0) {
-      listener.onFailed(SMConstants.Exception.INVALID_AMOUNT);
+      listener.onFailed(SPayConstants.Exception.INVALID_AMOUNT);
       hideProgress();
       return mInstance;
     }
 
     // Network state permission check
-    if (!SMPermissionCheck.doesUserHaveNetworkStatePermission(activity)) {
-      listener.onFailed(SMConstants.Exception.NO_NETWORK_STATE_PERMISSION);
+    if (!PermissionsManager.doesUserHaveNetworkStatePermission(activity)) {
+      listener.onFailed(SPayConstants.Exception.NO_NETWORK_STATE_PERMISSION);
       hideProgress();
       return mInstance;
     }
 
     // Internet permission check
-    if (!SMPermissionCheck.doesUserHaveInternetPermission(activity)) {
-      listener.onFailed(SMConstants.Exception.NO_INTERNET_PERMISSION);
+    if (!PermissionsManager.doesUserHaveInternetPermission(activity)) {
+      listener.onFailed(SPayConstants.Exception.NO_INTERNET_PERMISSION);
       hideProgress();
       return mInstance;
     }
 
     // check is internet is available
-    if (!SMNetworkManager.IsInternetAvailable(activity)) {
-      listener.onFailed(SMConstants.Exception.NO_INTERNET_MESSAGE);
+    if (!SPayNetworkManager.IsInternetAvailable(activity)) {
+      listener.onFailed(SPayConstants.Exception.NO_INTERNET_MESSAGE);
       hideProgress();
       return mInstance;
     }
@@ -223,15 +223,15 @@ public class ShurjoPaySDK {
     }
 
     builder.setView(confirmationDialogLayout());
-    builder.setTitle(SMConstants.PAYMENT_TITLE);
-    builder.setPositiveButton(SMConstants.OK, new DialogInterface.OnClickListener() {
+    builder.setTitle(SPayConstants.PAYMENT_TITLE);
+    builder.setPositiveButton(SPayConstants.OK, new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialogInterface, int i) {
         // Going to Bank Page
         bankTransactionView();
       }
     });
-    builder.setNegativeButton(SMConstants.CANCEL, null);
+    builder.setNegativeButton(SPayConstants.CANCEL, null);
     builder.setCancelable(false);
     builder.create();
     alert = builder.show();
@@ -334,28 +334,28 @@ public class ShurjoPaySDK {
     WebSettings settings = webView.getSettings();
     settings.setJavaScriptEnabled(true);
     settings.setAppCacheEnabled(true);
-    webView.addJavascriptInterface(new SMWebAppInterface(dialog, listener), "Android");
+    webView.addJavascriptInterface(new SPayWebAppInterface(dialog, listener), "Android");
     webView.clearCache(true);
     settings.setSaveFormData(false);
     settings.setAllowFileAccess(true);
     settings.setLoadWithOverviewMode(true);
     settings.setBuiltInZoomControls(false);
     settings.getJavaScriptCanOpenWindowsAutomatically();
-    webView.setWebViewClient(new SMWebClient(bar));
+    webView.setWebViewClient(new SPayWebClient(bar));
     webView.loadUrl(loadBankPageUrl());
 
-    SMRequestModel smRequestModel = new SMRequestModel();
-    smRequestModel.setMerchantName("spaytest");
-    smRequestModel.setMerchantPass("pass1234");
-    smRequestModel.setPaymentOption("bkash");
-    smRequestModel.setReturnURL("www.google.com");
-    smRequestModel.setUniqID("NOK" + getCurrentTimeStamp());
-    smRequestModel.setUserIP("192.168.11.22");
-    smRequestModel.setTotalAmount(String.valueOf(amount));
+    RequiredDataModel requiredDataModel = new RequiredDataModel();
+    requiredDataModel.setMerchantName("spaytest");
+    requiredDataModel.setMerchantPass("pass1234");
+    requiredDataModel.setPaymentOption("bkash");
+    requiredDataModel.setReturnURL("www.google.com");
+    requiredDataModel.setUniqID("NOK" + getCurrentTimeStamp());
+    requiredDataModel.setUserIP("192.168.11.22");
+    requiredDataModel.setTotalAmount(String.valueOf(amount));
 
-    webView.postUrl(SMAppConfig.BANK_PAGE_LINK, postDataFromMap(smRequestModel).getBytes());
+    webView.postUrl(SPayAppConfig.BANK_PAGE_LINK, postDataFromMap(requiredDataModel).getBytes());
 
-    webView.setWebChromeClient(new SMWebViewClient(bar));
+    webView.setWebChromeClient(new SPayWebViewClient(bar));
   }
 
   /**
@@ -375,7 +375,7 @@ public class ShurjoPaySDK {
     param_map.put("paymentOption", "");
     param_map.put("returnURL", "https://www.google.com/");
 
-    return SMUtilities.buildURI(SMAppConfig.BANK_PAGE_LINK, param_map);
+    return SPayUtilities.buildURI(SPayAppConfig.BANK_PAGE_LINK, param_map);
   }
 
   /**
@@ -385,11 +385,11 @@ public class ShurjoPaySDK {
    */
   private void cancelDialog(final Dialog d) {
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-    builder.setTitle(SMConstants.EXIT);
-    builder.setMessage(SMConstants.CANCEL_PAYMENT);
+    builder.setTitle(SPayConstants.EXIT);
+    builder.setMessage(SPayConstants.CANCEL_PAYMENT);
     builder.setCancelable(false);
-    builder.setPositiveButton(SMConstants.CONTINUE, null);
-    builder.setNegativeButton(SMConstants.EXIT, null);
+    builder.setPositiveButton(SPayConstants.CONTINUE, null);
+    builder.setNegativeButton(SPayConstants.EXIT, null);
 
     final AlertDialog dialog1 = builder.create();
     dialog1.show();

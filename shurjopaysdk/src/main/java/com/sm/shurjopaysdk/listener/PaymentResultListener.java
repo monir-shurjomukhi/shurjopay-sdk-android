@@ -1,8 +1,6 @@
-package com.sm.shurjopaysdk.utils;
+package com.sm.shurjopaysdk.listener;
 
-import android.net.Uri;
-
-import java.util.Map;
+import com.sm.shurjopaysdk.model.TransactionInfo;
 
 //        _                     _        ___  ___        _     _      _       _      _        _
 //       | |                   (_)       |  \/  |       | |   | |    (_)     | |    | |      | |
@@ -13,22 +11,7 @@ import java.util.Map;
 //                            _/ |
 //
 
-public class SMUtilities {
-  /**
-   * Build URI
-   *
-   * @param url    main link
-   * @param params to add
-   * @return main uri with param
-   */
-  public static String buildURI(String url, Map<String, String> params) {
-
-    // build url with parameters.
-    Uri.Builder builder = Uri.parse(url).buildUpon();
-    for (Map.Entry<String, String> entry : params.entrySet()) {
-      builder.appendQueryParameter(entry.getKey(), entry.getValue());
-    }
-
-    return builder.build().toString();
-  }
+public interface PaymentResultListener {
+  void onSuccess(TransactionInfo responseModel);
+  void onFailed(String message);
 }

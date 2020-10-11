@@ -13,7 +13,7 @@ import android.content.pm.PackageManager;
 //                            _/ |
 //
 
-public class SMPermissionCheck {
+public class PermissionsManager {
   /**
    * Does User has internet permission
    *

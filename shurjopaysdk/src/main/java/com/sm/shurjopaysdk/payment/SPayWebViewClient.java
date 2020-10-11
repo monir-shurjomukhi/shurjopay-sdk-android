@@ -1,4 +1,8 @@
-package com.sm.shurjopaysdk.utils;
+package com.sm.shurjopaysdk.payment;
+
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.widget.ProgressBar;
 
 //        _                     _        ___  ___        _     _      _       _      _        _
 //       | |                   (_)       |  \/  |       | |   | |    (_)     | |    | |      | |
@@ -9,18 +13,22 @@ package com.sm.shurjopaysdk.utils;
 //                            _/ |
 //
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+public class SPayWebViewClient extends WebChromeClient {
+  private ProgressBar bar;
 
-public class SMNetworkManager {
-  public static boolean IsInternetAvailable(Context context) {
-    ConnectivityManager connectivityManager =
-        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-    NetworkInfo activeNetworkInfo = null;
-    if (connectivityManager != null) {
-      activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-    }
-    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+  SPayWebViewClient(ProgressBar bar) {
+    this.bar = bar;
+  }
+
+  /**
+   * On progress changed
+   *
+   * @param view        to change
+   * @param newProgress to show
+   */
+  @Override
+  public void onProgressChanged(WebView view, int newProgress) {
+    super.onProgressChanged(view, newProgress);
+    bar.setProgress(newProgress);
   }
 }

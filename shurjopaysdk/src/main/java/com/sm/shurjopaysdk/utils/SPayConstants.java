@@ -9,7 +9,7 @@ package com.sm.shurjopaysdk.utils;
 //                            _/ |
 //
 
-public class SMConstants {
+public class SPayConstants {
   /**
    * Constants fields for Common
    */

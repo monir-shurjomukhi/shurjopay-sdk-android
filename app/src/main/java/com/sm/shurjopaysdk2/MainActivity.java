@@ -8,12 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.sm.shurjopaysdk.listener.SMAppServiceListener;
-import com.sm.shurjopaysdk.model.SMResponseModel;
+import com.sm.shurjopaysdk.listener.PaymentResultListener;
+import com.sm.shurjopaysdk.model.TransactionInfo;
 import com.sm.shurjopaysdk.payment.ShurjoPaySDK;
 
 public class MainActivity extends AppCompatActivity
-    implements SMAppServiceListener, View.OnClickListener {
+    implements PaymentResultListener, View.OnClickListener {
   private static final String TAG = MainActivity.class.getSimpleName();
   private EditText amount;
   private ShurjoPaySDK paySDK;
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity
   }
 
   @Override
-  public void onSuccess(SMResponseModel responseModel) {
+  public void onSuccess(TransactionInfo responseModel) {
     Log.d(TAG, "onSuccess: " + responseModel);
     new AlertDialog.Builder(MainActivity.this).setTitle("Payment Successful")
         .setMessage(responseModel.toString())

@@ -16,10 +16,10 @@ import android.widget.ProgressBar;
 //                            _/ |
 //
 
-public class SMWebClient extends WebViewClient {
+public class SPayWebClient extends WebViewClient {
   private ProgressBar bar;
 
-  SMWebClient(ProgressBar bar) {
+  SPayWebClient(ProgressBar bar) {
     this.bar = bar;
   }
 

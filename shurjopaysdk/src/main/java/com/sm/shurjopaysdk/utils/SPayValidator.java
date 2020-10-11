@@ -11,7 +11,7 @@ import android.text.TextUtils;
 //                            _/ |
 //
 
-public class SMValidator {
+public class SPayValidator {
 
   /**
    * Check if the given amount is valid
@@ -25,17 +25,6 @@ public class SMValidator {
       isValid = amount > 0;
       // if one is invalid then break with return false
       if (!isValid) {
-        break;
-      }
-    }
-    return isValid;
-  }
-
-  public static boolean isValid(String... text) {
-    boolean isValid = false;
-    for (String texts : text) {
-      isValid = !isEmpty(texts);
-      if (isValid) {
         break;
       }
     }
