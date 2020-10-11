@@ -75,7 +75,7 @@ public class SPayWebAppInterface {
       }
     }
 
-    responseModel.setSuccess(responseMap.get("success").equalsIgnoreCase("TRUE"));
+    /*responseModel.setSuccess(responseMap.get("success").equalsIgnoreCase("TRUE"));
     responseModel.setBank_tx_id(responseMap.get("bank_tx_id"));
     responseModel.setBank_status(responseMap.get("bank_status"));
     responseModel.setAmount(responseMap.get("amount"));
@@ -85,7 +85,7 @@ public class SPayWebAppInterface {
     responseModel.setSpay_id(responseMap.get("spay_id"));
     responseModel.setTc_status(responseMap.get("tc_status"));
     responseModel.setErr_msg(responseMap.get("err_msg"));
-    responseModel.setTc_amount(responseMap.get("tc_amount"));
+    responseModel.setTc_amount(responseMap.get("tc_amount"));*/
     return responseModel;
   }
 }
