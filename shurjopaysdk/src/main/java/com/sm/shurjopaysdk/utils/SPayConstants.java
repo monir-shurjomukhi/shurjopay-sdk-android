@@ -10,6 +10,8 @@ package com.sm.shurjopaysdk.utils;
 //
 
 public class SPayConstants {
+  public static final String BASE_URL_TEST = "https://shurjotest.com/";
+  public static final String BASE_URL_IPN = "http://ipn.shurjotest.com/";
   /**
    * Constants fields for Common
    */

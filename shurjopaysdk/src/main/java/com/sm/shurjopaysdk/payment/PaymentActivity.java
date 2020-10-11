@@ -23,6 +23,8 @@ public class PaymentActivity extends AppCompatActivity {
     webView = findViewById(R.id.webView);
     progressBar = findViewById(R.id.progressBar);
     progressDialog = new ProgressDialog(this);
+
+    requiredDataModel = (RequiredDataModel) getIntent().getSerializableExtra("data");
   }
 
   private void getSpData() {
@@ -33,5 +35,9 @@ public class PaymentActivity extends AppCompatActivity {
     progressDialog.setMessage(message);
     progressDialog.setCancelable(false);
     progressDialog.show();
+  }
+
+  private void hideProgress() {
+    progressDialog.dismiss();
   }
 }

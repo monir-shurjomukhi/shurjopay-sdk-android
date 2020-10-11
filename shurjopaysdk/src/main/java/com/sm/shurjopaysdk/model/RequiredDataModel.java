@@ -1,6 +1,8 @@
 package com.sm.shurjopaysdk.model;
 
-public class RequiredDataModel {
+import java.io.Serializable;
+
+public class RequiredDataModel implements Serializable {
   private String merchantName;
   private String merchantPass;
   private String userIP;
