@@ -45,7 +45,7 @@ public class ShurjoPaySDK {
   private static ShurjoPaySDK mInstance = null;
 
   private Activity activity = null;
-  private PaymentResultListener listener = null;
+  public static PaymentResultListener listener = null;
   private AlertDialog alert;
   private ProgressDialog progressDialog;
 

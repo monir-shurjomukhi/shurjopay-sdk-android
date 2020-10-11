@@ -14,32 +14,36 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class ApiClient {
-    private static final String TAG = "ApiClient";
+  private static final String TAG = "ApiClient";
 
-  private static Retrofit retrofit;
+  private Retrofit retrofit;
+  private static ApiClient apiClient;
 
-  private static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-      .connectTimeout(60, TimeUnit.SECONDS)
-      .readTimeout(60, TimeUnit.SECONDS)
-      .writeTimeout(60, TimeUnit.SECONDS)
-      .addInterceptor(httpLoggingInterceptor())
-      .build();
+  private ApiClient() {
+    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
+        .addInterceptor(httpLoggingInterceptor())
+        .build();
 
-  public static Retrofit getTestApiClient() {
-    if (retrofit == null) {
-      retrofit = new Retrofit.Builder()
-          .baseUrl(SPayConstants.BASE_URL_TEST)
-          .client(okHttpClient)
-          .addConverterFactory(ScalarsConverterFactory.create())
-          .addConverterFactory(GsonConverterFactory.create())
-          .build();
-    }
-
-    return retrofit;
+    retrofit = new Retrofit.Builder()
+        .baseUrl(SPayConstants.BASE_URL_TEST)
+        .client(okHttpClient)
+        .addConverterFactory(ScalarsConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create())
+        .build();
   }
 
-  public ApiInterface getApiInterface() {
-      return retrofit.create(ApiInterface.class);
+  public static synchronized ApiClient getInstance() {
+    if (apiClient == null) {
+      apiClient = new ApiClient();
+    }
+    return apiClient;
+  }
+
+  public ApiInterface getApi() {
+    return retrofit.create(ApiInterface.class);
   }
 
   private static HttpLoggingInterceptor httpLoggingInterceptor() {

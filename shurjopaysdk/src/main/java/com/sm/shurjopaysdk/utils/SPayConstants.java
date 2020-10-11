@@ -26,6 +26,7 @@ public class SPayConstants {
    * Constant field for Exceptions
    */
   public class Exception {
+    public static final String USER_INPUT_ERROR = "User input error";
     public static final String NO_INTERNET_PERMISSION = "No internet permission is given";
     public static final String NO_NETWORK_STATE_PERMISSION = "No network state permission is given";
     public static final String NO_INTERNET_MESSAGE =
