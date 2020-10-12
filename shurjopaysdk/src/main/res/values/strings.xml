@@ -5,4 +5,5 @@
   <color name="colorPrimaryDark">#303F9F</color>
   <color name="colorPrimaryOpposite">#ffffff</color>
   <color name="colorText">#454545</color>
+  <color name="colorFab">#0D9548</color>
 </resources>
