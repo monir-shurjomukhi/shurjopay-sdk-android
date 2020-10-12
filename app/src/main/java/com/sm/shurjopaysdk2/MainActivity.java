@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity
     requiredDataModel.setUniqID("NOK" + new Random().nextInt(1000000));
     requiredDataModel.setTotalAmount(Double.parseDouble(amount.getText().toString()));
 
-    ShurjoPaySDK.getInstance(this).payment(this, requiredDataModel, new PaymentResultListener() {
+    ShurjoPaySDK.getInstance(this).makePayment(this, requiredDataModel, new PaymentResultListener() {
       @Override
       public void onSuccess(TransactionInfo transactionInfo) {
         Log.d(TAG, "onSuccess: transactionInfo = " + transactionInfo);
