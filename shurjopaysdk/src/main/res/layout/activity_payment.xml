@@ -7,6 +7,7 @@
   tools:context=".payment.PaymentActivity">
 
   <android.support.v7.widget.Toolbar
+    android:visibility="gone"
     android:id="@+id/toolbar"
     android:layout_width="0dp"
     android:layout_height="56dp"

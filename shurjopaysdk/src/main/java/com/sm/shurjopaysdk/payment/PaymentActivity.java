@@ -4,14 +4,16 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 import com.sm.shurjopaysdk.R;
 import com.sm.shurjopaysdk.model.RequiredDataModel;
 import com.sm.shurjopaysdk.networking.ApiClient;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,7 +91,7 @@ public class PaymentActivity extends AppCompatActivity {
         + requiredDataModel.getUniqID()
         + "</uniqID>"
         + "<totalAmount>"
-        + "10"
+        + requiredDataModel.getTotalAmount()
         + "</totalAmount>"
         + "<paymentOption>"
         + "shurjopay"
@@ -113,7 +115,7 @@ public class PaymentActivity extends AppCompatActivity {
         + requiredDataModel.getUniqID()
         + "</uniqID>"
         + "<totalAmount>"
-        + "10"
+        + requiredDataModel.getTotalAmount()
         + "</totalAmount>"
         + "<paymentOption>"
         + "shurjopay"
@@ -127,7 +129,23 @@ public class PaymentActivity extends AppCompatActivity {
 
 
   private void showWebsite(String html) {
-
+    webView.getSettings().setLoadsImagesAutomatically(true);
+    webView.getSettings().setJavaScriptEnabled(true);
+    webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+    webView.loadData(html, "text/html; charset=utf-8", "UTF-8");
+    webView.setWebViewClient(new WebViewClient() {
+      @Override
+      public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        view.loadUrl(url);
+        return false;
+      }
+    });
+    webView.setWebChromeClient(new WebChromeClient() {
+      @Override
+      public void onProgressChanged(WebView view, int newProgress) {
+        progressBar.setProgress(newProgress);
+      }
+    });
   }
 
   private void showProgress(String message) {

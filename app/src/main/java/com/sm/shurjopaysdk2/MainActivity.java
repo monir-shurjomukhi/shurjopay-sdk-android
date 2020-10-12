@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
     requiredDataModel.setMerchantName("spaytest");
     requiredDataModel.setMerchantPass("JehPNXF58rXs");
     requiredDataModel.setUniqID("NOK" + new Random().nextInt(1000000));
-    requiredDataModel.setTotalAmount(10);
+    requiredDataModel.setTotalAmount(Double.parseDouble(amount.getText().toString()));
 
     ShurjoPaySDK.getInstance(this).payment(this, requiredDataModel, new PaymentResultListener() {
       @Override
