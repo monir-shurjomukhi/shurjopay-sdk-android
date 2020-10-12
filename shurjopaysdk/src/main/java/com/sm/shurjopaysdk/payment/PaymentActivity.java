@@ -9,9 +9,9 @@ import android.widget.ProgressBar;
 
 import com.sm.shurjopaysdk.R;
 import com.sm.shurjopaysdk.model.RequiredDataModel;
-import com.sm.shurjopaysdk.model.SPDataModel;
 import com.sm.shurjopaysdk.networking.ApiClient;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,6 +32,7 @@ public class PaymentActivity extends AppCompatActivity {
     progressBar = findViewById(R.id.progressBar);
     progressDialog = new ProgressDialog(this);
     requiredDataModel = (RequiredDataModel) getIntent().getSerializableExtra("data");
+    Log.d(TAG, "onCreate: requiredDataModel = " + requiredDataModel);
 
     showProgress("Please Wait...");
     getHtmlForm();
@@ -42,8 +43,7 @@ public class PaymentActivity extends AppCompatActivity {
       ShurjoPaySDK.listener.onFailed("User Input Error!");
       finish();
     }
-    ApiClient.getInstance().getApi().getHtmlForm(
-        new SPDataModel(getSpDataFromModel(requiredDataModel)))
+    ApiClient.getInstance().getApi().getHtmlForm(getSpDataFromModel(requiredDataModel))
         .enqueue(new Callback<String>() {
           @Override
           public void onResponse(Call<String> call, Response<String> response) {
@@ -74,31 +74,57 @@ public class PaymentActivity extends AppCompatActivity {
   }
 
   public static String getSpDataFromModel(RequiredDataModel requiredDataModel) {
-    return "spdata=<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        + " <shurjoPay>\n"
-        + " <merchantName>"
+    Log.d(TAG, "getSpDataFromModel: ========= " + "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+        + "<shurjoPay>"
+        + "<merchantName>"
         + requiredDataModel.getMerchantName()
-        + "</merchantName>\n"
-        + " <merchantPass>"
+        + "</merchantName>"
+        + "<merchantPass>"
         + requiredDataModel.getMerchantPass()
-        + "</merchantPass>\n"
-        + " <userIP>"
-        + requiredDataModel.getUserIP()
-        + "</userIP>\n"
-        + " <uniqID>"
+        + "</merchantPass>"
+        + "<userIP>"
+        + "127.0.0.1"
+        + "</userIP>"
+        + "<uniqID>"
         + requiredDataModel.getUniqID()
-        + "</uniqID>\n"
-        + " <totalAmount>"
-        + requiredDataModel.getTotalAmount()
-        + "</totalAmount>\n"
-        + " <paymentOption>"
-        + requiredDataModel.getPaymentOption()
-        + "</paymentOption>\n"
-        + " <returnURL>"
-        + requiredDataModel.getReturnURL()
-        + "</returnURL>\n"
-        + " </shurjoPay>";
+        + "</uniqID>"
+        + "<totalAmount>"
+        + "10"
+        + "</totalAmount>"
+        + "<paymentOption>"
+        + "shurjopay"
+        + "</paymentOption>"
+        + "<returnURL>"
+        + "https://sdk.com"
+        + "</returnURL>"
+        + "</shurjoPay>");
+
+    return "<shurjoPay>"
+        + "<merchantName>"
+        + requiredDataModel.getMerchantName()
+        + "</merchantName>"
+        + "<merchantPass>"
+        + requiredDataModel.getMerchantPass()
+        + "</merchantPass>"
+        + "<userIP>"
+        + "127.0.0.1"
+        + "</userIP>"
+        + "<uniqID>"
+        + requiredDataModel.getUniqID()
+        + "</uniqID>"
+        + "<totalAmount>"
+        + "10"
+        + "</totalAmount>"
+        + "<paymentOption>"
+        + "shurjopay"
+        + "</paymentOption>"
+        + "<returnURL>"
+        + "https://sdk.com"
+        + "</returnURL>"
+        + "</shurjoPay>";
   }
+
+
 
   private void showWebsite(String html) {
 
@@ -111,6 +137,8 @@ public class PaymentActivity extends AppCompatActivity {
   }
 
   private void hideProgress() {
-    progressDialog.dismiss();
+    if (progressDialog != null && progressDialog.isShowing()) {
+      progressDialog.dismiss();
+    }
   }
 }

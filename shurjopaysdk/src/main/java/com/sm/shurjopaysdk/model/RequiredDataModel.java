@@ -7,7 +7,7 @@ public class RequiredDataModel implements Serializable {
   private String merchantPass;
   private String userIP;
   private String uniqID;
-  private String totalAmount;
+  private double totalAmount;
   private String paymentOption;
   private String returnURL;
 
@@ -43,11 +43,11 @@ public class RequiredDataModel implements Serializable {
     this.uniqID = uniqID;
   }
 
-  public String getTotalAmount() {
+  public double getTotalAmount() {
     return totalAmount;
   }
 
-  public void setTotalAmount(String totalAmount) {
+  public void setTotalAmount(double totalAmount) {
     this.totalAmount = totalAmount;
   }
 

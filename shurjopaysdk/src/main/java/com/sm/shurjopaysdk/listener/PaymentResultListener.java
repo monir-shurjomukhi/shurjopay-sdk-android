@@ -12,6 +12,6 @@ import com.sm.shurjopaysdk.model.TransactionInfo;
 //
 
 public interface PaymentResultListener {
-  void onSuccess(TransactionInfo responseModel);
+  void onSuccess(TransactionInfo transactionInfo);
   void onFailed(String message);
 }

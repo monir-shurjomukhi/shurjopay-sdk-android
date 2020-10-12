@@ -1,24 +1,29 @@
 package com.sm.shurjopaysdk.model;
 
-public class SPDataModel {
-  private String spdata;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-  public SPDataModel(String spdata) {
-    this.spdata = spdata;
+public class SPDataModel {
+  @SerializedName("jsdata")
+  @Expose
+  private String jsdata;
+
+  public SPDataModel(String jsdata) {
+    this.jsdata = jsdata;
   }
 
   @Override
   public String toString() {
     return "SPDataModel{" +
-        "spdata='" + spdata + '\'' +
+        "spdata='" + jsdata + '\'' +
         '}';
   }
 
-  public String getSpdata() {
-    return spdata;
+  public String getJsdata() {
+    return jsdata;
   }
 
-  public void setSpdata(String spdata) {
-    this.spdata = spdata;
+  public void setJsdata(String jsdata) {
+    this.jsdata = jsdata;
   }
 }

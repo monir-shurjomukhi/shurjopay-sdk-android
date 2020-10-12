@@ -14,7 +14,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.KeyEvent;
@@ -158,52 +160,57 @@ public class ShurjoPaySDK {
    *
    * @return payment start
    */
-  public ShurjoPaySDK payment() {
+  public void payment(Context context, RequiredDataModel dataModel, PaymentResultListener resultListener) {
     // start progress dialog
-    if (activity != null) {
+    /*if (activity != null) {
       progressDialog = new ProgressDialog(activity);
       progressDialog.setCancelable(false);
       progressDialog.show();
-    }
+    }*/
 
     // Check for listener is set
-    if (listener == null) {
+    /*if (listener == null) {
       hideProgress();
       return mInstance;
-    }
+    }*/
 
     // Check minimum and maximum amount check
-    if (amount < 0) {
+    if (dataModel.getTotalAmount() < 0) {
       listener.onFailed(SPayConstants.Exception.INVALID_AMOUNT);
-      hideProgress();
-      return mInstance;
+      return;
+      //hideProgress();
+      //return mInstance;
     }
 
     // Network state permission check
     if (!PermissionsManager.doesUserHaveNetworkStatePermission(activity)) {
       listener.onFailed(SPayConstants.Exception.NO_NETWORK_STATE_PERMISSION);
-      hideProgress();
-      return mInstance;
+      //hideProgress();
+      return;
     }
 
     // Internet permission check
     if (!PermissionsManager.doesUserHaveInternetPermission(activity)) {
       listener.onFailed(SPayConstants.Exception.NO_INTERNET_PERMISSION);
-      hideProgress();
-      return mInstance;
+      //hideProgress();
+      return;
     }
 
     // check is internet is available
-    if (!SPayNetworkManager.IsInternetAvailable(activity)) {
+    if (!SPayNetworkManager.IsInternetAvailable(context)) {
       listener.onFailed(SPayConstants.Exception.NO_INTERNET_MESSAGE);
-      hideProgress();
-      return mInstance;
+      //hideProgress();
+      return;
     }
 
     // After all checked properly, finally going to Confirmation Dialog
-    showConfirmationDialog();
+    //showConfirmationDialog();
 
-    return mInstance;
+    ShurjoPaySDK.listener = resultListener;
+
+    Intent intent = new Intent(context, PaymentActivity.class);
+    intent.putExtra("data", dataModel);
+    context.startActivity(intent);
   }
 
   /**
@@ -351,7 +358,7 @@ public class ShurjoPaySDK {
     requiredDataModel.setReturnURL("www.google.com");
     requiredDataModel.setUniqID("NOK" + getCurrentTimeStamp());
     requiredDataModel.setUserIP("192.168.11.22");
-    requiredDataModel.setTotalAmount(String.valueOf(amount));
+    requiredDataModel.setTotalAmount(amount);
 
     webView.postUrl(SPayAppConfig.BANK_PAGE_LINK, postDataFromMap(requiredDataModel).getBytes());
 
