@@ -2,6 +2,7 @@ package com.sm.shurjopaysdk.payment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -44,7 +45,7 @@ public class PaymentActivity extends AppCompatActivity {
       @Override
       public void onClick(View view) {
         showProgress("Please Wait...");
-        ApiClient.getInstance("ipn").getApi().getTransactionInfo(SPayConstants.TOKEN,
+        ApiClient.getInstance(SPayConstants.IPN).getApi().getTransactionInfo(SPayConstants.TOKEN,
             requiredDataModel.getUniqID())
             .enqueue(new Callback<TransactionInfo>() {
               @Override
@@ -57,6 +58,21 @@ public class PaymentActivity extends AppCompatActivity {
                     if (transactionInfo == null) {
                       ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
                       return;
+                    }
+
+                    if (transactionInfo.getSpCode() == null) {
+                      if (transactionInfo.getMethod() != null) {
+                        showProgress("Please Wait...");
+                        new Handler().postDelayed(new Runnable() {
+                          @Override
+                          public void run() {
+                            tryAgain();
+                          }
+                        }, 60000);
+                        return;
+                      } else {
+                        ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
+                      }
                     }
 
                     if (transactionInfo.getSpCode().equalsIgnoreCase("000")) {
@@ -94,6 +110,53 @@ public class PaymentActivity extends AppCompatActivity {
     getHtmlForm();
   }
 
+  private void tryAgain() {
+    ApiClient.getInstance(SPayConstants.IPN).getApi().getTransactionInfo(SPayConstants.TOKEN,
+        requiredDataModel.getUniqID())
+        .enqueue(new Callback<TransactionInfo>() {
+          @Override
+          public void onResponse(Call<TransactionInfo> call, Response<TransactionInfo> response) {
+            Log.d(TAG, "onResponse: response.body() = " + response.body());
+            hideProgress();
+            try {
+              if (response.isSuccessful()) {
+                TransactionInfo transactionInfo = response.body();
+                if (transactionInfo == null) {
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                  return;
+                }
+
+                if (transactionInfo.getSpCode().equalsIgnoreCase("000")) {
+                  ShurjoPaySDK.listener.onSuccess(response.body());
+                } else {
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
+                }
+              } else {
+                ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+              }
+            } catch (Exception e) {
+              Log.e(TAG, "onResponse: ", e);
+              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+            }
+            finish();
+          }
+
+          @Override
+          public void onFailure(Call<TransactionInfo> call, Throwable t) {
+            try {
+              Log.e(TAG, "onFailure: ", t);
+              hideProgress();
+              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+              finish();
+            } catch (Exception e) {
+              Log.e(TAG, "onFailure: ", e);
+              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+              finish();
+            }
+          }
+        });
+  }
+
   private void getHtmlForm() {
     if (requiredDataModel == null) {
       ShurjoPaySDK.listener.onFailed("User Input Error!");
@@ -101,7 +164,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     showProgress("Please Wait...");
-    ApiClient.getInstance("test").getApi().getHtmlForm(getSpDataFromModel(requiredDataModel))
+    ApiClient.getInstance(SPayConstants.TEST).getApi().getHtmlForm(getSpDataFromModel(requiredDataModel))
         .enqueue(new Callback<String>() {
           @Override
           public void onResponse(Call<String> call, Response<String> response) {

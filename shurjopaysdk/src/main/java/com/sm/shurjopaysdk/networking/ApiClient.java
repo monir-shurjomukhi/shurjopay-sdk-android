@@ -28,9 +28,9 @@ public class ApiClient {
         .addInterceptor(httpLoggingInterceptor())
         .build();
 
-    if (type.equalsIgnoreCase("ipn")) {
+    if (type.equalsIgnoreCase(SPayConstants.IPN)) {
       baseUrl = SPayConstants.BASE_URL_IPN;
-    } else if (type.equalsIgnoreCase("live")) {
+    } else if (type.equalsIgnoreCase(SPayConstants.LIVE)) {
     }
 
     retrofit = new Retrofit.Builder()
