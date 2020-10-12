@@ -2,6 +2,7 @@ package com.sm.shurjopaysdk.payment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,7 +13,9 @@ import android.widget.ProgressBar;
 
 import com.sm.shurjopaysdk.R;
 import com.sm.shurjopaysdk.model.RequiredDataModel;
+import com.sm.shurjopaysdk.model.TransactionInfo;
 import com.sm.shurjopaysdk.networking.ApiClient;
+import com.sm.shurjopaysdk.utils.SPayConstants;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,6 +26,7 @@ public class PaymentActivity extends AppCompatActivity {
   private WebView webView;
   private ProgressBar progressBar;
   private ProgressDialog progressDialog;
+  private FloatingActionButton fab;
   private RequiredDataModel requiredDataModel;
 
   @Override
@@ -35,8 +39,58 @@ public class PaymentActivity extends AppCompatActivity {
     progressDialog = new ProgressDialog(this);
     requiredDataModel = (RequiredDataModel) getIntent().getSerializableExtra("data");
     Log.d(TAG, "onCreate: requiredDataModel = " + requiredDataModel);
+    fab = findViewById(R.id.fab);
+    fab.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        showProgress("Please Wait...");
+        ApiClient.getInstance("ipn").getApi().getTransactionInfo(SPayConstants.TOKEN,
+            requiredDataModel.getUniqID())
+            .enqueue(new Callback<TransactionInfo>() {
+              @Override
+              public void onResponse(Call<TransactionInfo> call, Response<TransactionInfo> response) {
+                Log.d(TAG, "onResponse: response.body() = " + response.body());
+                hideProgress();
+                try {
+                  if (response.isSuccessful()) {
+                    TransactionInfo transactionInfo = response.body();
+                    if (transactionInfo == null) {
+                      ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                      return;
+                    }
 
-    showProgress("Please Wait...");
+                    if (transactionInfo.getSpCode().equalsIgnoreCase("000")) {
+                      ShurjoPaySDK.listener.onSuccess(response.body());
+                    } else {
+                      ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
+                    }
+                  } else {
+                    ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                  }
+                } catch (Exception e) {
+                  Log.e(TAG, "onResponse: ", e);
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                }
+                finish();
+              }
+
+              @Override
+              public void onFailure(Call<TransactionInfo> call, Throwable t) {
+                try {
+                  Log.e(TAG, "onFailure: ", t);
+                  hideProgress();
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                  finish();
+                } catch (Exception e) {
+                  Log.e(TAG, "onFailure: ", e);
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                  finish();
+                }
+              }
+            });
+      }
+    });
+
     getHtmlForm();
   }
 
@@ -45,7 +99,9 @@ public class PaymentActivity extends AppCompatActivity {
       ShurjoPaySDK.listener.onFailed("User Input Error!");
       finish();
     }
-    ApiClient.getInstance().getApi().getHtmlForm(getSpDataFromModel(requiredDataModel))
+
+    showProgress("Please Wait...");
+    ApiClient.getInstance("test").getApi().getHtmlForm(getSpDataFromModel(requiredDataModel))
         .enqueue(new Callback<String>() {
           @Override
           public void onResponse(Call<String> call, Response<String> response) {
@@ -125,7 +181,6 @@ public class PaymentActivity extends AppCompatActivity {
         + "</returnURL>"
         + "</shurjoPay>";
   }
-
 
 
   private void showWebsite(String html) {

@@ -12,6 +12,7 @@ package com.sm.shurjopaysdk.payment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.widget.Toast;
 
 import com.sm.shurjopaysdk.listener.PaymentResultListener;
 import com.sm.shurjopaysdk.model.RequiredDataModel;
@@ -39,6 +40,12 @@ public class ShurjoPaySDK {
   }
 
   public void makePayment(Activity activity, RequiredDataModel dataModel, PaymentResultListener resultListener) {
+    if (resultListener == null) {
+      Toast.makeText(activity, "Listener is null!", Toast.LENGTH_SHORT).show();
+      return;
+    }
+    listener = resultListener;
+
     if (activity == null) {
       listener.onFailed(SPayConstants.Exception.USER_INPUT_ERROR);
       return;
@@ -67,8 +74,6 @@ public class ShurjoPaySDK {
       listener.onFailed(SPayConstants.Exception.NO_INTERNET_MESSAGE);
       return;
     }
-
-    ShurjoPaySDK.listener = resultListener;
 
     Intent intent = new Intent(activity, PaymentActivity.class);
     intent.putExtra("data", dataModel);

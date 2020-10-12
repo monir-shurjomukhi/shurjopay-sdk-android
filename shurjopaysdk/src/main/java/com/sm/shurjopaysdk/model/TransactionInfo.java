@@ -9,17 +9,42 @@ package com.sm.shurjopaysdk.model;
 //                            _/ |
 //
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class TransactionInfo {
+  @SerializedName("txID")
+  @Expose
   private String txID;
+  @SerializedName("bankTxID")
+  @Expose
   private String bankTxID;
+  @SerializedName("bankTxStatus")
+  @Expose
   private String bankTxStatus;
+  @SerializedName("txnAmount")
+  @Expose
   private double txnAmount;
-  private int spCode;
+  @SerializedName("spCode")
+  @Expose
+  private String spCode;
+  @SerializedName("gateWay")
+  @Expose
   private String gateWay;
+  @SerializedName("method")
+  @Expose
   private String method;
+  @SerializedName("requestTime")
+  @Expose
   private String requestTime;
+  @SerializedName("paymentTime")
+  @Expose
   private String paymentTime;
+  @SerializedName("cardHolderName")
+  @Expose
   private String cardHolderName;
+  @SerializedName("cardNumber")
+  @Expose
   private String cardNumber;
 
   @Override
@@ -29,7 +54,7 @@ public class TransactionInfo {
         ", bankTxID='" + bankTxID + '\'' +
         ", bankTxStatus='" + bankTxStatus + '\'' +
         ", txnAmount=" + txnAmount +
-        ", spCode=" + spCode +
+        ", spCode='" + spCode + '\'' +
         ", gateWay='" + gateWay + '\'' +
         ", method='" + method + '\'' +
         ", requestTime='" + requestTime + '\'' +
@@ -71,11 +96,11 @@ public class TransactionInfo {
     this.txnAmount = txnAmount;
   }
 
-  public int getSpCode() {
+  public String getSpCode() {
     return spCode;
   }
 
-  public void setSpCode(int spCode) {
+  public void setSpCode(String spCode) {
     this.spCode = spCode;
   }
 

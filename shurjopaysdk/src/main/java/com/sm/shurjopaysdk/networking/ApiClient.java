@@ -19,7 +19,8 @@ public class ApiClient {
   private Retrofit retrofit;
   private static ApiClient apiClient;
 
-  private ApiClient() {
+  private ApiClient(String type) {
+    String baseUrl = SPayConstants.BASE_URL_TEST;
     OkHttpClient okHttpClient = new OkHttpClient.Builder()
         .connectTimeout(60, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
@@ -27,18 +28,23 @@ public class ApiClient {
         .addInterceptor(httpLoggingInterceptor())
         .build();
 
+    if (type.equalsIgnoreCase("ipn")) {
+      baseUrl = SPayConstants.BASE_URL_IPN;
+    } else if (type.equalsIgnoreCase("live")) {
+    }
+
     retrofit = new Retrofit.Builder()
-        .baseUrl(SPayConstants.BASE_URL_TEST)
+        .baseUrl(baseUrl)
         .client(okHttpClient)
         .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .build();
   }
 
-  public static synchronized ApiClient getInstance() {
-    if (apiClient == null) {
-      apiClient = new ApiClient();
-    }
+  public static synchronized ApiClient getInstance(String type) {
+    //if (apiClient == null) {
+    apiClient = new ApiClient(type);
+    //}
     return apiClient;
   }
 
