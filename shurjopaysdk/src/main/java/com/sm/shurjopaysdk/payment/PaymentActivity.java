@@ -6,7 +6,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -62,7 +61,7 @@ public class PaymentActivity extends AppCompatActivity {
                   if (response.isSuccessful()) {
                     TransactionInfo transactionInfo = response.body();
                     if (transactionInfo == null) {
-                      ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                      ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
                       return;
                     }
 
@@ -81,19 +80,25 @@ public class PaymentActivity extends AppCompatActivity {
                       }
                     }*/
 
-                    if (!TextUtils.isEmpty(transactionInfo.getSpCode()) && transactionInfo.getSpCode().equalsIgnoreCase("000")) {
+                    if (TextUtils.isEmpty(transactionInfo.getSpCode())) {
+                      ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED);
+                      return;
+                    }
+
+                    if (transactionInfo.getSpCode().equalsIgnoreCase("000")) {
                       ShurjoPaySDK.listener.onSuccess(response.body());
                     } else {
                       ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
                     }
                   } else {
-                    ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                    ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
                   }
                 } catch (Exception e) {
                   Log.e(TAG, "onResponse: ", e);
-                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+                } finally {
+                  finish();
                 }
-                finish();
               }
 
               @Override
@@ -101,11 +106,10 @@ public class PaymentActivity extends AppCompatActivity {
                 try {
                   Log.e(TAG, "onFailure: ", t);
                   hideProgress();
-                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
-                  finish();
                 } catch (Exception e) {
                   Log.e(TAG, "onFailure: ", e);
-                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                } finally {
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
                   finish();
                 }
               }
@@ -129,8 +133,14 @@ public class PaymentActivity extends AppCompatActivity {
             try {
               if (response.isSuccessful()) {
                 TransactionInfo transactionInfo = response.body();
+
                 if (transactionInfo == null) {
-                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+                  return;
+                }
+
+                if (TextUtils.isEmpty(transactionInfo.getSpCode())) {
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED);
                   return;
                 }
 
@@ -140,11 +150,11 @@ public class PaymentActivity extends AppCompatActivity {
                   ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
                 }
               } else {
-                ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+                ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
               }
             } catch (Exception e) {
               Log.e(TAG, "onResponse: ", e);
-              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
             }
             finish();
           }
@@ -154,11 +164,10 @@ public class PaymentActivity extends AppCompatActivity {
             try {
               Log.e(TAG, "onFailure: ", t);
               hideProgress();
-              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
-              finish();
             } catch (Exception e) {
               Log.e(TAG, "onFailure: ", e);
-              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.UNKNOWN_ERROR);
+            } finally {
+              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
               finish();
             }
           }
@@ -294,21 +303,22 @@ public class PaymentActivity extends AppCompatActivity {
     }
   }
 
-  @Override
+  /*@Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     // Check if the key event was the Back button and if there's history
     if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+      webView.clearHistory();
       showWebsite(html);
       return true;
     }
     // If it wasn't the Back key or there's no web page history, bubble up to the default
     // system behavior (probably exit the activity)
     return super.onKeyDown(keyCode, event);
-  }
+  }*/
 
   @Override
   public void onBackPressed() {
-    ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED_BY_USER);
+    ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED);
     super.onBackPressed();
   }
 }

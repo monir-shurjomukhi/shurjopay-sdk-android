@@ -25,8 +25,8 @@ public class SPayConstants {
    */
   public class Exception {
     public static final String USER_INPUT_ERROR = "User input error!";
-    public static final String PAYMENT_CANCELLED_BY_USER = "Payment cancelled by user!";
-    public static final String UNKNOWN_ERROR = "Payment declined from gateway!";
+    public static final String PAYMENT_CANCELLED = "Payment has been cancelled!";
+    public static final String PAYMENT_DECLINED = "Payment has been declined from gateway!";
     public static final String BANK_TRANSACTION_FAILED = "Bank transaction failed!";
     public static final String NO_INTERNET_PERMISSION = "No internet permission is given!";
     public static final String NO_NETWORK_STATE_PERMISSION = "No network state permission is given!";
