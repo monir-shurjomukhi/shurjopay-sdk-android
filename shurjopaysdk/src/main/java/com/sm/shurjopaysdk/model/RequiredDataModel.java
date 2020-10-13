@@ -11,6 +11,13 @@ public class RequiredDataModel implements Serializable {
   private String paymentOption;
   private String returnURL;
 
+  public RequiredDataModel(String merchantName, String merchantPass, String uniqID, double totalAmount) {
+    this.merchantName = merchantName;
+    this.merchantPass = merchantPass;
+    this.uniqID = uniqID;
+    this.totalAmount = totalAmount;
+  }
+
   public String getMerchantName() {
     return merchantName;
   }

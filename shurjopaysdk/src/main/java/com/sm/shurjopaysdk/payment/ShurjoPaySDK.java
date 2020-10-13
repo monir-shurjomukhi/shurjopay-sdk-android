@@ -12,6 +12,7 @@ package com.sm.shurjopaysdk.payment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.sm.shurjopaysdk.listener.PaymentResultListener;
@@ -25,7 +26,8 @@ public class ShurjoPaySDK {
   private static ShurjoPaySDK mInstance = new ShurjoPaySDK();
   public static PaymentResultListener listener = null;
 
-  private ShurjoPaySDK() { }
+  private ShurjoPaySDK() {
+  }
 
   /**
    * Get a singleton instance for payment
@@ -39,7 +41,8 @@ public class ShurjoPaySDK {
     return mInstance;
   }
 
-  public void makePayment(Activity activity, RequiredDataModel dataModel, PaymentResultListener resultListener) {
+  public void makePayment(Activity activity, String sdkType, RequiredDataModel dataModel,
+                          PaymentResultListener resultListener) {
     if (resultListener == null) {
       Toast.makeText(activity, "Listener is null!", Toast.LENGTH_SHORT).show();
       return;
@@ -47,6 +50,16 @@ public class ShurjoPaySDK {
     listener = resultListener;
 
     if (activity == null) {
+      listener.onFailed(SPayConstants.Exception.USER_INPUT_ERROR);
+      return;
+    }
+
+    if (dataModel == null) {
+      listener.onFailed(SPayConstants.Exception.USER_INPUT_ERROR);
+      return;
+    }
+
+    if (TextUtils.isEmpty(sdkType)) {
       listener.onFailed(SPayConstants.Exception.USER_INPUT_ERROR);
       return;
     }
@@ -76,7 +89,8 @@ public class ShurjoPaySDK {
     }
 
     Intent intent = new Intent(activity, PaymentActivity.class);
-    intent.putExtra("data", dataModel);
+    intent.putExtra(SPayConstants.DATA, dataModel);
+    intent.putExtra(SPayConstants.SDK_TYPE, sdkType);
     activity.startActivity(intent);
   }
 }

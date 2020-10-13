@@ -11,17 +11,21 @@ package com.sm.shurjopaysdk.utils;
 
 public class SPayConstants {
   public static final String BASE_URL_TEST = "https://shurjotest.com/";
-  public static final String BASE_URL_IPN = "http://ipn.shurjotest.com/";
+  public static final String BASE_URL_LIVE = "https://shurjopay.com/";
+  public static final String BASE_URL_IPN_TEST = "http://ipn.shurjotest.com/";
+  public static final String BASE_URL_IPN_LIVE = "http://ipn.shurjopay.com/";
   public static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOiJzcGF5dGVzdCIsImlhdCI6MTU5ODM2MTI1Nn0.cwkvdTDI6_K430xq7Iqapaknbqjm9J3Th1EiXePIEcY";
-  public static final String TEST = "test";
-  public static final String LIVE = "live";
-  public static final String IPN = "ipn";
+  public static final String IPN_TEST = "ipn-test";
+  public static final String IPN_LIVE = "ipn-live";
+  public static final String DATA = "data";
+  public static final String SDK_TYPE = "sdk-type";
 
   /**
    * Constant field for Exceptions
    */
   public class Exception {
     public static final String USER_INPUT_ERROR = "User input error!";
+    public static final String PAYMENT_CANCELLED_BY_USER = "Payment cancelled by user!";
     public static final String UNKNOWN_ERROR = "Payment declined from gateway!";
     public static final String BANK_TRANSACTION_FAILED = "Bank transaction failed!";
     public static final String NO_INTERNET_PERMISSION = "No internet permission is given!";
@@ -29,5 +33,10 @@ public class SPayConstants {
     public static final String NO_INTERNET_MESSAGE =
         "No internet available now. Please check your internet connection.";
     public static final String INVALID_AMOUNT = "Invalid amount!";
+  }
+
+  public class SdkType {
+    public static final String TEST = "test";
+    public static final String LIVE = "live";
   }
 }

@@ -2,10 +2,11 @@ package com.sm.shurjopaysdk.payment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -29,6 +30,8 @@ public class PaymentActivity extends AppCompatActivity {
   private ProgressDialog progressDialog;
   private FloatingActionButton fab;
   private RequiredDataModel requiredDataModel;
+  private String sdkType;
+  private String html;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -38,15 +41,18 @@ public class PaymentActivity extends AppCompatActivity {
     webView = findViewById(R.id.webView);
     progressBar = findViewById(R.id.progressBar);
     progressDialog = new ProgressDialog(this);
-    requiredDataModel = (RequiredDataModel) getIntent().getSerializableExtra("data");
+    requiredDataModel = (RequiredDataModel) getIntent().getSerializableExtra(SPayConstants.DATA);
     Log.d(TAG, "onCreate: requiredDataModel = " + requiredDataModel);
+    sdkType = getIntent().getStringExtra(SPayConstants.SDK_TYPE);
+
     fab = findViewById(R.id.fab);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         showProgress("Please Wait...");
-        ApiClient.getInstance(SPayConstants.IPN).getApi().getTransactionInfo(SPayConstants.TOKEN,
-            requiredDataModel.getUniqID())
+        ApiClient.getInstance(sdkType.equalsIgnoreCase(SPayConstants.SdkType.TEST) ?
+            SPayConstants.IPN_TEST : SPayConstants.IPN_LIVE)
+            .getApi().getTransactionInfo(SPayConstants.TOKEN, requiredDataModel.getUniqID())
             .enqueue(new Callback<TransactionInfo>() {
               @Override
               public void onResponse(Call<TransactionInfo> call, Response<TransactionInfo> response) {
@@ -60,22 +66,22 @@ public class PaymentActivity extends AppCompatActivity {
                       return;
                     }
 
-                    if (transactionInfo.getSpCode() == null) {
+                    /*if (transactionInfo.getSpCode() == null) {
                       if (transactionInfo.getMethod() != null) {
                         showProgress("Please Wait...");
                         new Handler().postDelayed(new Runnable() {
                           @Override
                           public void run() {
-                            tryAgain();
+                            //tryAgain();
                           }
                         }, 60000);
                         return;
                       } else {
                         ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
                       }
-                    }
+                    }*/
 
-                    if (transactionInfo.getSpCode().equalsIgnoreCase("000")) {
+                    if (!TextUtils.isEmpty(transactionInfo.getSpCode()) && transactionInfo.getSpCode().equalsIgnoreCase("000")) {
                       ShurjoPaySDK.listener.onSuccess(response.body());
                     } else {
                       ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
@@ -111,7 +117,9 @@ public class PaymentActivity extends AppCompatActivity {
   }
 
   private void tryAgain() {
-    ApiClient.getInstance(SPayConstants.IPN).getApi().getTransactionInfo(SPayConstants.TOKEN,
+    ApiClient.getInstance(sdkType.equalsIgnoreCase(SPayConstants.SdkType.TEST) ?
+        SPayConstants.IPN_TEST : SPayConstants.IPN_LIVE)
+        .getApi().getTransactionInfo(SPayConstants.TOKEN,
         requiredDataModel.getUniqID())
         .enqueue(new Callback<TransactionInfo>() {
           @Override
@@ -164,7 +172,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     showProgress("Please Wait...");
-    ApiClient.getInstance(SPayConstants.TEST).getApi().getHtmlForm(getSpDataFromModel(requiredDataModel))
+    ApiClient.getInstance(sdkType).getApi().getHtmlForm(getSpDataFromModel(requiredDataModel))
         .enqueue(new Callback<String>() {
           @Override
           public void onResponse(Call<String> call, Response<String> response) {
@@ -172,7 +180,8 @@ public class PaymentActivity extends AppCompatActivity {
             hideProgress();
             try {
               if (response.isSuccessful()) {
-                showWebsite(response.body());
+                html = response.body();
+                showWebsite(html);
               } else {
                 ShurjoPaySDK.listener.onFailed("Payment Failed!");
                 finish();
@@ -254,7 +263,14 @@ public class PaymentActivity extends AppCompatActivity {
     webView.setWebViewClient(new WebViewClient() {
       @Override
       public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        view.loadUrl(url);
+        Log.d(TAG, "shouldOverrideUrlLoading: url = " + url);
+
+        if (url.contains("return_url.php")) {
+          //ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED_BY_USER);
+          //finish();
+        } else {
+          view.loadUrl(url);
+        }
         return false;
       }
     });
@@ -277,4 +293,23 @@ public class PaymentActivity extends AppCompatActivity {
       progressDialog.dismiss();
     }
   }
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    // Check if the key event was the Back button and if there's history
+    if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+      showWebsite(html);
+      return true;
+    }
+    // If it wasn't the Back key or there's no web page history, bubble up to the default
+    // system behavior (probably exit the activity)
+    return super.onKeyDown(keyCode, event);
+  }
+
+  @Override
+  public void onBackPressed() {
+    ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED_BY_USER);
+    super.onBackPressed();
+  }
 }
+
