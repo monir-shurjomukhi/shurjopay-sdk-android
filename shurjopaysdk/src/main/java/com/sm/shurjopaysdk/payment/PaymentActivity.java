@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -34,6 +35,12 @@ public class PaymentActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_payment);
+
+    // add back arrow to toolbar
+    if (getSupportActionBar() != null){
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
 
     webView = findViewById(R.id.webView);
     progressBar = findViewById(R.id.progressBar);
@@ -322,6 +329,17 @@ public class PaymentActivity extends AppCompatActivity {
             }
           }
         });
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    // handle arrow click here
+    if (item.getItemId() == android.R.id.home) {
+      //ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED);
+      finish(); // close this activity and return to preview activity (if there is any)
+    }
+
+    return super.onOptionsItemSelected(item);
   }
 
   @Override
