@@ -2,7 +2,6 @@ package com.sm.shurjopaysdk.payment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,7 +26,6 @@ public class PaymentActivity extends AppCompatActivity {
   private WebView webView;
   private ProgressBar progressBar;
   private ProgressDialog progressDialog;
-  private FloatingActionButton fab;
   private RequiredDataModel requiredDataModel;
   private String sdkType;
   private String html;
@@ -44,134 +42,7 @@ public class PaymentActivity extends AppCompatActivity {
     Log.d(TAG, "onCreate: requiredDataModel = " + requiredDataModel);
     sdkType = getIntent().getStringExtra(SPayConstants.SDK_TYPE);
 
-    fab = findViewById(R.id.fab);
-    fab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        showProgress("Please Wait...");
-        ApiClient.getInstance(sdkType.equalsIgnoreCase(SPayConstants.SdkType.TEST) ?
-            SPayConstants.IPN_TEST : SPayConstants.IPN_LIVE)
-            .getApi().getTransactionInfo(SPayConstants.TOKEN, requiredDataModel.getUniqID())
-            .enqueue(new Callback<TransactionInfo>() {
-              @Override
-              public void onResponse(Call<TransactionInfo> call, Response<TransactionInfo> response) {
-                Log.d(TAG, "onResponse: response.body() = " + response.body());
-                hideProgress();
-                try {
-                  if (response.isSuccessful()) {
-                    TransactionInfo transactionInfo = response.body();
-                    if (transactionInfo == null) {
-                      ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
-                      return;
-                    }
-
-                    /*if (transactionInfo.getSpCode() == null) {
-                      if (transactionInfo.getMethod() != null) {
-                        showProgress("Please Wait...");
-                        new Handler().postDelayed(new Runnable() {
-                          @Override
-                          public void run() {
-                            //tryAgain();
-                          }
-                        }, 60000);
-                        return;
-                      } else {
-                        ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
-                      }
-                    }*/
-
-                    if (TextUtils.isEmpty(transactionInfo.getSpCode())) {
-                      ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED);
-                      return;
-                    }
-
-                    if (transactionInfo.getSpCode().equalsIgnoreCase("000")) {
-                      ShurjoPaySDK.listener.onSuccess(response.body());
-                    } else {
-                      ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
-                    }
-                  } else {
-                    ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
-                  }
-                } catch (Exception e) {
-                  Log.e(TAG, "onResponse: ", e);
-                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
-                } finally {
-                  finish();
-                }
-              }
-
-              @Override
-              public void onFailure(Call<TransactionInfo> call, Throwable t) {
-                try {
-                  Log.e(TAG, "onFailure: ", t);
-                  hideProgress();
-                } catch (Exception e) {
-                  Log.e(TAG, "onFailure: ", e);
-                } finally {
-                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
-                  finish();
-                }
-              }
-            });
-      }
-    });
-
     getHtmlForm();
-  }
-
-  private void tryAgain() {
-    ApiClient.getInstance(sdkType.equalsIgnoreCase(SPayConstants.SdkType.TEST) ?
-        SPayConstants.IPN_TEST : SPayConstants.IPN_LIVE)
-        .getApi().getTransactionInfo(SPayConstants.TOKEN,
-        requiredDataModel.getUniqID())
-        .enqueue(new Callback<TransactionInfo>() {
-          @Override
-          public void onResponse(Call<TransactionInfo> call, Response<TransactionInfo> response) {
-            Log.d(TAG, "onResponse: response.body() = " + response.body());
-            hideProgress();
-            try {
-              if (response.isSuccessful()) {
-                TransactionInfo transactionInfo = response.body();
-
-                if (transactionInfo == null) {
-                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
-                  return;
-                }
-
-                if (TextUtils.isEmpty(transactionInfo.getSpCode())) {
-                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED);
-                  return;
-                }
-
-                if (transactionInfo.getSpCode().equalsIgnoreCase("000")) {
-                  ShurjoPaySDK.listener.onSuccess(response.body());
-                } else {
-                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
-                }
-              } else {
-                ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
-              }
-            } catch (Exception e) {
-              Log.e(TAG, "onResponse: ", e);
-              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
-            }
-            finish();
-          }
-
-          @Override
-          public void onFailure(Call<TransactionInfo> call, Throwable t) {
-            try {
-              Log.e(TAG, "onFailure: ", t);
-              hideProgress();
-            } catch (Exception e) {
-              Log.e(TAG, "onFailure: ", e);
-            } finally {
-              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
-              finish();
-            }
-          }
-        });
   }
 
   private void getHtmlForm() {
@@ -192,12 +63,12 @@ public class PaymentActivity extends AppCompatActivity {
                 html = response.body();
                 showWebsite(html);
               } else {
-                ShurjoPaySDK.listener.onFailed("Payment Failed!");
+                ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
                 finish();
               }
             } catch (Exception e) {
               Log.e(TAG, "onResponse: ", e);
-              ShurjoPaySDK.listener.onFailed("Payment Failed!");
+              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
               finish();
             }
           }
@@ -206,7 +77,7 @@ public class PaymentActivity extends AppCompatActivity {
           public void onFailure(Call<String> call, Throwable t) {
             hideProgress();
             Log.e(TAG, "onFailure: ", t);
-            ShurjoPaySDK.listener.onFailed("Payment Failed!");
+            ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
             finish();
           }
         });
@@ -265,6 +136,8 @@ public class PaymentActivity extends AppCompatActivity {
 
 
   private void showWebsite(String html) {
+    final String[] previousUrl = {""};
+    final String[] currentUrl = {""};
     webView.getSettings().setLoadsImagesAutomatically(true);
     webView.getSettings().setJavaScriptEnabled(true);
     webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
@@ -274,9 +147,21 @@ public class PaymentActivity extends AppCompatActivity {
       public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Log.d(TAG, "shouldOverrideUrlLoading: url = " + url);
 
-        if (url.contains("return_url.php")) {
+        previousUrl[0] = currentUrl[0];
+        currentUrl[0] = url;
+
+        Log.d(TAG, "shouldOverrideUrlLoading: previousUrl[0] = " + previousUrl[0]);
+        Log.d(TAG, "shouldOverrideUrlLoading: currentUrl[0] = " + currentUrl[0]);
+
+        if (currentUrl[0].contains("return_url.php")) {
           //ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED_BY_USER);
           //finish();
+          if (previousUrl[0].contains("cancel=ok")) {
+            ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED);
+            finish();
+          } else {
+            getTransactionInfo();
+          }
         } else {
           view.loadUrl(url);
         }
@@ -315,6 +200,129 @@ public class PaymentActivity extends AppCompatActivity {
     // system behavior (probably exit the activity)
     return super.onKeyDown(keyCode, event);
   }*/
+
+  private void getTransactionInfo() {
+    showProgress("Please Wait...");
+    ApiClient.getInstance(sdkType.equalsIgnoreCase(SPayConstants.SdkType.TEST) ?
+        SPayConstants.IPN_TEST : SPayConstants.IPN_LIVE)
+        .getApi().getTransactionInfo(SPayConstants.TOKEN, requiredDataModel.getUniqID())
+        .enqueue(new Callback<TransactionInfo>() {
+          @Override
+          public void onResponse(Call<TransactionInfo> call, Response<TransactionInfo> response) {
+            Log.d(TAG, "onResponse: response.body() = " + response.body());
+            hideProgress();
+            try {
+              if (response.isSuccessful()) {
+                TransactionInfo transactionInfo = response.body();
+                if (transactionInfo == null) {
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+                  return;
+                }
+
+                    /*if (transactionInfo.getSpCode() == null) {
+                      if (transactionInfo.getMethod() != null) {
+                        showProgress("Please Wait...");
+                        new Handler().postDelayed(new Runnable() {
+                          @Override
+                          public void run() {
+                            //tryAgain();
+                          }
+                        }, 60000);
+                        return;
+                      } else {
+                        ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
+                      }
+                    }*/
+
+                if (TextUtils.isEmpty(transactionInfo.getSpCode())) {
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+                  return;
+                }
+
+                if (transactionInfo.getSpCode().equalsIgnoreCase("000")) {
+                  ShurjoPaySDK.listener.onSuccess(response.body());
+                } else {
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
+                }
+              } else {
+                ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+              }
+            } catch (Exception e) {
+              Log.e(TAG, "onResponse: ", e);
+              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+            } finally {
+              finish();
+            }
+          }
+
+          @Override
+          public void onFailure(Call<TransactionInfo> call, Throwable t) {
+            try {
+              Log.e(TAG, "onFailure: ", t);
+              hideProgress();
+            } catch (Exception e) {
+              Log.e(TAG, "onFailure: ", e);
+            } finally {
+              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+              finish();
+            }
+          }
+        });
+  }
+
+  private void tryAgain() {
+    ApiClient.getInstance(sdkType.equalsIgnoreCase(SPayConstants.SdkType.TEST) ?
+        SPayConstants.IPN_TEST : SPayConstants.IPN_LIVE)
+        .getApi().getTransactionInfo(SPayConstants.TOKEN,
+        requiredDataModel.getUniqID())
+        .enqueue(new Callback<TransactionInfo>() {
+          @Override
+          public void onResponse(Call<TransactionInfo> call, Response<TransactionInfo> response) {
+            Log.d(TAG, "onResponse: response.body() = " + response.body());
+            hideProgress();
+            try {
+              if (response.isSuccessful()) {
+                TransactionInfo transactionInfo = response.body();
+
+                if (transactionInfo == null) {
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+                  return;
+                }
+
+                if (TextUtils.isEmpty(transactionInfo.getSpCode())) {
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_CANCELLED);
+                  return;
+                }
+
+                if (transactionInfo.getSpCode().equalsIgnoreCase("000")) {
+                  ShurjoPaySDK.listener.onSuccess(response.body());
+                } else {
+                  ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
+                }
+              } else {
+                ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+              }
+            } catch (Exception e) {
+              Log.e(TAG, "onResponse: ", e);
+              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+            }
+            finish();
+          }
+
+          @Override
+          public void onFailure(Call<TransactionInfo> call, Throwable t) {
+            try {
+              Log.e(TAG, "onFailure: ", t);
+              hideProgress();
+            } catch (Exception e) {
+              Log.e(TAG, "onFailure: ", e);
+            } finally {
+              ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
+              finish();
+            }
+          }
+        });
+  }
 
   @Override
   public void onBackPressed() {

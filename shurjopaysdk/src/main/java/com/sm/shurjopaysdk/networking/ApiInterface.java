@@ -14,7 +14,7 @@ public interface ApiInterface {
 
   @FormUrlEncoded
   @POST("sp-data.php")
-  Call<String> getHtmlForm(@Field("spdata") String jsdata);
+  Call<String> getHtmlForm(@Field("spdata") String spData);
 
   @GET("v1/search")
   Call<TransactionInfo> getTransactionInfo(

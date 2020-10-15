@@ -31,7 +31,7 @@ public class SPayConstants {
     public static final String NO_INTERNET_PERMISSION = "No internet permission is given!";
     public static final String NO_NETWORK_STATE_PERMISSION = "No network state permission is given!";
     public static final String NO_INTERNET_MESSAGE =
-        "No internet available now. Please check your internet connection.";
+        "No internet connection! Please check your connection settings.";
     public static final String INVALID_AMOUNT = "Invalid amount!";
   }
 
