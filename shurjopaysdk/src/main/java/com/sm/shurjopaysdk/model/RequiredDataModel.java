@@ -10,12 +10,15 @@ public class RequiredDataModel implements Serializable {
   private double totalAmount;
   private String paymentOption;
   private String returnURL;
+  private String token;
 
-  public RequiredDataModel(String merchantName, String merchantPass, String uniqID, double totalAmount) {
+  public RequiredDataModel(String merchantName, String merchantPass, String uniqID,
+                           double totalAmount, String token) {
     this.merchantName = merchantName;
     this.merchantPass = merchantPass;
     this.uniqID = uniqID;
     this.totalAmount = totalAmount;
+    this.token = token;
   }
 
   public String getMerchantName() {
@@ -74,30 +77,25 @@ public class RequiredDataModel implements Serializable {
     this.returnURL = returnURL;
   }
 
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
   @Override
   public String toString() {
-    return "SMRequestModel{"
-        + "merchantName='"
-        + merchantName
-        + '\''
-        + ", merchantPass='"
-        + merchantPass
-        + '\''
-        + ", userIP='"
-        + userIP
-        + '\''
-        + ", uniqID='"
-        + uniqID
-        + '\''
-        + ", totalAmount='"
-        + totalAmount
-        + '\''
-        + ", paymentOption='"
-        + paymentOption
-        + '\''
-        + ", returnURL='"
-        + returnURL
-        + '\''
-        + '}';
+    return "RequiredDataModel{" +
+        "merchantName='" + merchantName + '\'' +
+        ", merchantPass='" + merchantPass + '\'' +
+        ", userIP='" + userIP + '\'' +
+        ", uniqID='" + uniqID + '\'' +
+        ", totalAmount=" + totalAmount +
+        ", paymentOption='" + paymentOption + '\'' +
+        ", returnURL='" + returnURL + '\'' +
+        ", token='" + token + '\'' +
+        '}';
   }
 }

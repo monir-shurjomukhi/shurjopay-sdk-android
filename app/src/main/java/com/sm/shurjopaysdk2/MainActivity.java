@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         "spaytest",
         "JehPNXF58rXs",
         "NOK" + new Random().nextInt(1000000),
-        Double.parseDouble(amount.getText().toString())
+        Double.parseDouble(amount.getText().toString()),
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOiJzcGF5dGVzdCIsImlhdCI6MTU5ODM2MTI1Nn0.cwkvdTDI6_K430xq7Iqapaknbqjm9J3Th1EiXePIEcY"
     );
 
     //requiredDataModel.setMerchantName("spaytest");
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     ShurjoPaySDK.getInstance().makePayment(
         this,
-        SPayConstants.SdkType.LIVE,
+        SPayConstants.SdkType.TEST,
         requiredDataModel,
         new PaymentResultListener() {
       @Override

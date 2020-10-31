@@ -212,7 +212,7 @@ public class PaymentActivity extends AppCompatActivity {
     showProgress("Please Wait...");
     ApiClient.getInstance(sdkType.equalsIgnoreCase(SPayConstants.SdkType.TEST) ?
         SPayConstants.IPN_TEST : SPayConstants.IPN_LIVE)
-        .getApi().getTransactionInfo(SPayConstants.TOKEN, requiredDataModel.getUniqID())
+        .getApi().getTransactionInfo(requiredDataModel.getToken(), requiredDataModel.getUniqID())
         .enqueue(new Callback<TransactionInfo>() {
           @Override
           public void onResponse(Call<TransactionInfo> call, Response<TransactionInfo> response) {
@@ -280,7 +280,7 @@ public class PaymentActivity extends AppCompatActivity {
   private void tryAgain() {
     ApiClient.getInstance(sdkType.equalsIgnoreCase(SPayConstants.SdkType.TEST) ?
         SPayConstants.IPN_TEST : SPayConstants.IPN_LIVE)
-        .getApi().getTransactionInfo(SPayConstants.TOKEN,
+        .getApi().getTransactionInfo(requiredDataModel.getToken(),
         requiredDataModel.getUniqID())
         .enqueue(new Callback<TransactionInfo>() {
           @Override
@@ -348,4 +348,3 @@ public class PaymentActivity extends AppCompatActivity {
     super.onBackPressed();
   }
 }
-
