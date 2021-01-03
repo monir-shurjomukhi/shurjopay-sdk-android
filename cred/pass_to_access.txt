@@ -1,0 +1,3 @@
+alias: shurjopay-sdk
+name: Shurjomukhi
+password: shurj0Droid

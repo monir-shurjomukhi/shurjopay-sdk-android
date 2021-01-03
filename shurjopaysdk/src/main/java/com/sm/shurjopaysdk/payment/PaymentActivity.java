@@ -2,7 +2,6 @@ package com.sm.shurjopaysdk.payment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -11,6 +10,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.sm.shurjopaysdk.R;
 import com.sm.shurjopaysdk.model.RequiredDataModel;
@@ -37,7 +38,7 @@ public class PaymentActivity extends AppCompatActivity {
     setContentView(R.layout.activity_payment);
 
     // add back arrow to toolbar
-    if (getSupportActionBar() != null){
+    if (getSupportActionBar() != null) {
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
       getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -225,21 +226,6 @@ public class PaymentActivity extends AppCompatActivity {
                   ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);
                   return;
                 }
-
-                    /*if (transactionInfo.getSpCode() == null) {
-                      if (transactionInfo.getMethod() != null) {
-                        showProgress("Please Wait...");
-                        new Handler().postDelayed(new Runnable() {
-                          @Override
-                          public void run() {
-                            //tryAgain();
-                          }
-                        }, 60000);
-                        return;
-                      } else {
-                        ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.BANK_TRANSACTION_FAILED);
-                      }
-                    }*/
 
                 if (TextUtils.isEmpty(transactionInfo.getSpCode())) {
                   ShurjoPaySDK.listener.onFailed(SPayConstants.Exception.PAYMENT_DECLINED);

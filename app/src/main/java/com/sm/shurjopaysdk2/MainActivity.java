@@ -1,12 +1,13 @@
 package com.sm.shurjopaysdk2;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.sm.shurjopaysdk.listener.PaymentResultListener;
 import com.sm.shurjopaysdk.model.RequiredDataModel;
@@ -26,30 +27,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     setContentView(R.layout.activity_main);
 
     amount = (EditText) findViewById(R.id.input_amount);
-    amount.setText(new Random().nextInt(100000) + "");
+    amount.setText("1");
 
-    Button bt_payment = (Button) findViewById(R.id.bt_payment);
-    bt_payment.setOnClickListener(this);
+    Button btnPayment = (Button) findViewById(R.id.btnPayment);
+    btnPayment.setOnClickListener(this);
   }
 
   @Override
   public void onClick(View v) {
     RequiredDataModel requiredDataModel = new RequiredDataModel(
-        "spaytest",
-        "JehPNXF58rXs",
-        "NOK" + new Random().nextInt(1000000),
+        "allexambd",
+        "bnzofEyOCfBW",
+        "AEB" + new Random().nextInt(1000000),
         Double.parseDouble(amount.getText().toString()),
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOiJzcGF5dGVzdCIsImlhdCI6MTU5ODM2MTI1Nn0.cwkvdTDI6_K430xq7Iqapaknbqjm9J3Th1EiXePIEcY"
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOiJhbGxleGFtYmQiLCJpYXQiOjE2MDM5ODg4NDB9.mfHdsOh-RWp10DSdgkF22tx1XJtEye4CHOcYIlC0rKY"
     );
-
-    //requiredDataModel.setMerchantName("spaytest");
-    //requiredDataModel.setMerchantPass("JehPNXF58rXs");
-    //requiredDataModel.setUniqID("NOK" + new Random().nextInt(1000000));
-    //requiredDataModel.setTotalAmount(Double.parseDouble(amount.getText().toString()));
 
     ShurjoPaySDK.getInstance().makePayment(
         this,
-        SPayConstants.SdkType.TEST,
+        SPayConstants.SdkType.LIVE,
         requiredDataModel,
         new PaymentResultListener() {
       @Override
